@@ -8,10 +8,15 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io"
 	"os"
 	"strconv"
+)
+
+var (
+	input = flag.String("input", "./input.txt", "The file to use as input.")
 )
 
 func findMostCalories(r io.Reader) (int, error) {
@@ -48,7 +53,9 @@ func findMostCalories(r io.Reader) (int, error) {
 }
 
 func main() {
-	f, err := os.Open("./input.txt")
+	flag.Parse()
+
+	f, err := os.Open(*input)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v", err)
 		os.Exit(1)

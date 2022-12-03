@@ -3,21 +3,6 @@
 //
 // Eleves separate their inventories by a blank line.
 //
-// 1000
-// 2000
-// 3000
-//
-// 4000
-//
-// 5000
-// 6000
-//
-// 7000
-// 8000
-// 9000
-//
-// 10000
-//
 // Find the Elf carrying the most Calories. How many total Calories is that Elf carrying?
 package main
 

@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -20,18 +21,16 @@ var (
 )
 
 func findMostCalories(r io.Reader) (int, error) {
-	max := 0
+	elfCalories := []int{}
 
 	scanner := bufio.NewScanner(r)
 	sum := 0
 	for scanner.Scan() {
+		err := scanner.Err()
 		line := scanner.Text()
 
-		if line == "" {
-			if sum > max {
-				max = sum
-			}
-
+		if line == "" || err == io.EOF {
+			elfCalories = append(elfCalories, sum)
 			sum = 0
 			continue
 		}
@@ -49,7 +48,16 @@ func findMostCalories(r io.Reader) (int, error) {
 		return 0, err
 	}
 
-	return max, nil
+	sort.Ints(elfCalories)
+
+	fmt.Println(elfCalories)
+
+	calories := 0
+	for _, c := range elfCalories[:len(elfCalories)-3] {
+		fmt.Println(c)
+	}
+
+	return calories, nil
 }
 
 func main() {

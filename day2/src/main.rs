@@ -26,7 +26,7 @@ const YOU_ROCK: &str = "X";
 const YOU_PAPER: &str = "Y";
 const YOU_SCISSORS: &str = "Z";
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum Results {
     UNKNOWN,
     LOSE,
@@ -34,7 +34,7 @@ enum Results {
     WIN
 }
 
-fn round(opponent: &str, you: &str) -> i32 {
+fn round(opponent: &str, you: &str) -> Result<i32, &'static str> {
     let res = match opponent {
         OPPONENT_ROCK => 
             match you {
@@ -60,6 +60,10 @@ fn round(opponent: &str, you: &str) -> i32 {
         _ => Results::UNKNOWN,
     };
 
+    if res == Results::UNKNOWN {
+        return Err("invalid result");
+    }
+
     let shape_score = match you {
         YOU_ROCK => ROCK_POINTS,
         YOU_PAPER => PAPER_POINTS,
@@ -74,18 +78,29 @@ fn round(opponent: &str, you: &str) -> i32 {
         Results::WIN => WIN_POINTS,
     };
 
-    return outcome_score + shape_score;
+    return Ok(outcome_score + shape_score);
 }
 
 fn calculate_total(input: String) -> i32 {
     let mut score = 0;
 
     for line in input.lines() {
-        // Unwrapping is bad and you should feel bad.
-        let opponent = line.split_whitespace().nth(0).unwrap();
-        let you = line.split_whitespace().nth(1).unwrap();
+        let opponent = match line.split_whitespace().nth(0) {
+            Some(x) => x,
+            None => continue,
+        };
 
-        score += round(opponent, you);
+        let you = match line.split_whitespace().nth(1) {
+            Some(x) => x,
+            None => continue,
+        };
+
+        let r = match round(opponent, you) {
+            Ok(x) => x,
+            Err(_) => continue,
+        };
+        
+        score += r;
     }
     
     return score;

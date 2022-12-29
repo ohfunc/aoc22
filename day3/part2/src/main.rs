@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use std::fs;
 use std::path::Path;
 
@@ -21,21 +22,24 @@ jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
 PmmdzqPrVvPwwTWBwg
 wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
 ttgJtRGJQctTZtZT
-CrZsJsPPZsGzwwsLwLmpwMDw".to_string();
+CrZsJsPPZsGzwwsLwLmpwMDw"
+            .to_string();
 
-        assert_eq!(calculate_priorities(input), 157);
+        assert_eq!(calculate_priorities(input), 70);
     }
 }
 
 fn calculate_priorities(input: String) -> u32 {
+    // Stolen from https://dev.to/nickymeuleman/advent-of-code-2022-day-3-53dm, who
+    // taught me a lot about iterators in Rust!
     input
         .lines()
-        .filter_map(|line| {
-            let line = line.as_bytes();
-            let (left, right) = line.split_at(line.len() / 2);
-            left
+        .map(|line| line.as_bytes())
+        .tuples()
+        .filter_map(|(sack1, sack2, sack3)| {
+            sack1
                 .iter()
-                .find(|item| right.contains(item))
+                .find(|item| sack2.contains(item) && sack3.contains(item))
                 .map(|item| match item {
                     b'a'..=b'z' => (item - b'a') + 1,
                     _ => (item - b'A') + 27,
@@ -50,8 +54,7 @@ fn main() {
         gflags::print_help_and_exit(0);
     }
 
-    let input = fs::read_to_string(FILE.flag)
-        .expect("unable to read input");
+    let input = fs::read_to_string(FILE.flag).expect("unable to read input");
 
-    println!("the sum of item priorities is: {}", calculate_priorities(input));
+    println!("the sum of badge priorities is: {}", calculate_priorities(input));
 }
